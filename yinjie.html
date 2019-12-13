@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>轮播图</title>
+    <style>
+    	*{
+			padding: 0;
+			margin: 0;
+    	}
+    	ul,li{
+    		list-style: none;
+    	}
+    	.slip{
+    		width: 100%;
+    		height: 20px;
+    		margin-top: 5px;
+    		background-color: #ccc;
+    		background-image: url('images/a15.png');
+    		background-repeat: no-repeat;
+    		background-position: 400px 4px;
+    		padding-top: 4px;
+    		margin-bottom: 10px;
+    	}
+    	#yin{
+    		width: 1170px;
+    		height: 20px;
+    		margin-left: 425px;
+    		background-position: 50px 0px;
+    		overflow: hidden;
+    		position: relative;
+    	}
+    	.yinjie{
+    		width: 2500px;
+    		/* height: 20px; */
+    		position: absolute;
+    		left: -800px;
+    		margin: 0 auto;
+    	}
+		.warning{
+			font-size: 12px;
+			color: red;
+			float: right;
+			position: absolute;
+			right: 0px;
+			z-index: 99;
+			display: inline;
+			line-height: 20px;
+		}
+    	.box{
+			width: 1200px;
+			height: 382px;
+			margin: 0 auto;
+			position: relative;
+			overflow: hidden;
+    	}
+    	.slider{
+    		width: 8400px;
+    		position: absolute;
+    		left: -1200px;
+    		margin: 0 auto;
+    		background-color: red;
+    	}
+    	.slide{
+    		width: 1200px;
+    		overflow: hidden;
+    		float: left;
+    	}
+    	.box>span{
+    		display: block;
+    		width: 30px;
+    		height: 50px;
+    		text-align: center;
+    		cursor: pointer;
+    		color: white;
+    		top: 175px;
+    		line-height: 50px;
+    		background-color: red;
+    		font-size: 30px;
+    		position: absolute;
+    		opacity:0;
+    	}
+    	#left{
+    		left: 30px;
+    	}
+    	#right{
+    		right: 30px;
+    	}
+    	.nav{
+    		position: absolute;
+    		left: 500px;
+    		bottom: 20px;
+    	}
+    	.nav>li{
+    		float: left;
+    		width: 20px;
+    		height: 20px;
+    		background: #ccc;
+    		cursor: pointer;
+    		margin: 0 10px;
+    		border-radius: 50%;
+    	}
+    	.nav .active{
+    		background: rgb(255, 110, 61);
+    		color: white;
+    	}
+    	.nav>li{
+    		text-align: center;
+    	}
+    	div {
+    		display: block;
+    	}
+    </style>
+</head>
+<body>
+	<div class="slip" id="slip">
+		<div clss="yin" id="yin">
+			<div class="yinjie" id="yinjie">
+				<div class="warning" id="warning">[温馨提示]最近有不少不法分子在网上骗人，请大家注意！！！</div>
+			</div>
+		</div>
+	</div>
+	<div class="box" id="box">
+		<div class="slider" id="slider">
+			<div class="slide"><img src="images/b5.png" alt=""></div>
+			<div class="slide"><img src="images/b1.png" alt=""></div>
+			<div class="slide"><img src="images/b2.png" alt=""></div>
+			<div class="slide"><img src="images/b3.png" alt=""></div>
+			<div class="slide"><img src="images/b4.png" alt=""></div>
+			<div class="slide"><img src="images/b5.png" alt=""></div>
+			<div class="slide"><img src="images/b1.png" alt=""></div>
+		</div>
+		<span id="left"><</span>
+		<span id="right">></span>
+		<ul class="nav" id="nav">
+			<li class="active">1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+		</ul>
+	</div>
+	<script type="text/javascript">
+		function getStyle(obj, attr){
+			if(obj.currentStyle){
+				return obj.currentStyle[attr];
+			} else {
+				return getComputedStyle(obj, null)[attr];
+			}
+		}
+		function animate(obj,json,callback){
+			clearInterval(obj.timer);
+			obj.timer = setInterval(function(){
+				var isStop = true;
+				for(var attr in json){
+					var now = 0;
+					if(attr == 'opacity'){
+						now = parseInt(getStyle(obj,attr)*100);
+					}else{
+						now = parseInt(getStyle(obj,attr));
+					}
+					var speed = (json[attr] - now) / 8;
+					speed = speed>0?Math.ceil(speed):Math.floor(speed);
+					var cur = now + speed;
+					if(attr == 'opacity'){
+						obj.style[attr] = cur / 100;
+					}else{
+						obj.style[attr] = cur + 'px';
+									}
+					if(json[attr] !== cur){
+						isStop = false;
+					}
+				}
+				if(isStop){
+					clearInterval(obj.timer);
+					callback&&callback();
+				}
+			}, 30)
+		}
+		var warning = document.getElementById("warning")
+		var box = document.getElementById("box");
+		var list = document.getElementById("nav").children;
+		var slider = document.getElementById("slider");
+		var left = document.getElementById("left");
+		var right = document.getElementById("right");
+		var i = 1;
+		var Moving = false;
+		window.onload = function(){
+			tm=setInterval(function(){
+				var now = parseInt(getStyle(warning,"right"));
+				if(now>=1700){
+					warning.style.right = 0+"px";
+				}
+				else{
+					warning.style.right = now+5+"px";
+				}
+			},50)
+		}
+		function next(){
+			if(!Moving){
+				Moving=true;
+				i++;
+				navchange();
+				animate(slider,{left:-1200*i},function(){
+					if(i === 6){
+						slider.style.left = "-1200px";
+						i = 1;
+					}
+					Moving = false;
+				});
+			}
+		}
+		function prev(){
+			if(Moving){
+				return;
+			}
+			Moving = true;
+			i--;
+			navchange();
+			animate(slider,{left:-1200*i},function(){
+				if(i === 0){
+					slider.style.left = "-6000px";
+					i = 5;
+				}
+				Moving = false;
+			});
+		}
+		var timer = setInterval(next,2000);
+		box.onmouseover = function(){
+			animate(right,{opacity:50});
+			animate(left,{opacity:50});
+			clearInterval(timer);
+		}
+		box.onmouseout = function(){
+			animate(left,{opacity:0});
+			animate(right,{opacity:0});
+			timer = setInterval(next,3000);
+		}
+		right.onclick = next;
+		left.onclick = prev;
+		for (var j = 0;j<list.length;j++ ) {
+			list[j].index = j;
+			list[j].onclick = function(){
+				i = this.index+1;
+				navchange();
+				animate(slider,{left:-1200*i})
+			}
+		}
+		function navchange(){
+			for(var k = 0;k < list.length;k++){
+				list[k].className="";
+			}
+			if(i===0){
+				list[4].className = "active";
+			}else{
+				list[(i-1)%5].className = "active";
+			}
+		}
+	</script>
+</body>
+</html>
